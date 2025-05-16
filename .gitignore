@@ -1,6 +1,7 @@
-*.pyc
-project.lock.json
-bin/
-obj/
-.vs/
-node_modules/
+healthchecks
+.vscode
+.github
+results
+# .dockerignore
+# Dockerfile
+# docker-compose.yml

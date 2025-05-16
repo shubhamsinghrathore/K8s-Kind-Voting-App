@@ -1,60 +1,123 @@
-# K8s Kind Voting App
+# k8s-kind-voting-app
 
-A comprehensive guide for setting up a Kubernetes cluster using Kind on an AWS EC2 instance, installing and configuring Argo CD, and deploying applications using Argo CD.
+A sample cloud-native voting application designed to demonstrate Kubernetes orchestration using [kind](https://kind.sigs.k8s.io/). This project showcases a microservices-based architecture with .NET, Redis, PostgreSQL, and Kubernetes.
 
-## Overview
+---
 
-This guide covers the steps to:
-- Launch an AWS EC2 instance.
-- Install Docker and Kind.
-- Create a Kubernetes cluster using Kind.
-- Install and access kubectl.
-- Set up the Kubernetes Dashboard.
-- Install and configure Argo CD.
-- Connect and manage your Kubernetes cluster with Argo CD.
+## Architecture Overview
+
+```
++----------------+      +----------------+      +------------------+
+|                |      |                |      |                  |
+|   Web Frontend +----->+   API Server   +----->+   PostgreSQL DB  |
+|  (Voting App)  |      | (.NET Core)    |      |                  |
+|                |      |                |      +------------------+
++----------------+      |                |
+                        |                |      +------------------+
+                        |                +----->+   Redis Cache    |
+                        |                |      |                  |
+                        +----------------+      +------------------+
+                                |
+                                v
+                        +----------------+
+                        |    Worker      |
+                        | (.NET Worker)  |
+                        +----------------+
+```
+
+- **Web Frontend**: User interface for voting and viewing results.
+- **API Server**: Handles business logic, connects to Redis and PostgreSQL.
+- **Redis**: Caching layer for fast vote tallying.
+- **PostgreSQL**: Persistent storage for votes and results.
+- **Worker**: Background service for processing votes from Redis to PostgreSQL.
+
+---
+
+## Features
+
+- Vote for your favorite option in real-time.
+- Results update live using Redis pub/sub.
+- Scalable microservices, each in its own container.
+- Easily deployable to a local Kubernetes cluster using kind.
+
+---
+
+## Prerequisites
+
+- [Docker](https://www.docker.com/)
+- [kind](https://kind.sigs.k8s.io/)
+- [kubectl](https://kubernetes.io/docs/tasks/tools/)
+- [.NET 7 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/7.0)
+
+---
+
+## Getting Started
+
+1. **Clone the repository:**
+   ```sh
+   git clone https://github.com/your-org/k8s-kind-voting-app.git
+   cd k8s-kind-voting-app
+   ```
+
+2. **Build Docker images:**
+   ```sh
+   docker build -t voting-app-frontend ./frontend
+   docker build -t voting-app-api ./api
+   docker build -t voting-app-worker ./worker
+   ```
+
+3. **Create a kind cluster:**
+   ```sh
+   kind create cluster --name voting-app
+   ```
+
+4. **Deploy to Kubernetes:**
+   ```sh
+   kubectl apply -f k8s/
+   ```
+
+5. **Access the app:**
+   - Find the service URL using `kubectl get svc`.
+
+---
+
+## Project Structure
+
+```
+k8s-kind-voting-app/
+├── api/         # .NET Core API server
+├── frontend/    # Web frontend (React/Angular/etc.)
+├── worker/      # .NET Worker service
+├── k8s/         # Kubernetes manifests
+└── README.md
+```
+
+---
 
 
-## Architecture
-
-![Architecture diagram](k8s-kind-voting-app.png)
-
-## Observability
-
-![Grafana diagram](grafana.png)
-![Prometheus diagram](prometheus.png)
-
-* A front-end web app in [Python](/vote) which lets you vote between two options
-* A [Redis](https://hub.docker.com/_/redis/) which collects new votes
-* A [.NET](/worker/) worker which consumes votes and stores them in…
-* A [Postgres](https://hub.docker.com/_/postgres/) database backed by a Docker volume
-* A [Node.js](/result) web app which shows the results of the voting in real time
 
 
+## Monitoring Dashboards
 
-## Resume Description
+### Grafana
+![Grafana Dashboard](./grafana.png)
 
-### Project Title: 
+### Prometheus
+![Prometheus Dashboard](./prometheus.png)
 
-Automated Deployment of Scalable Applications on AWS EC2 with Kubernetes and Argo CD
+## Technologies Used
 
-### Description: 
+- .NET 7
+- StackExchange.Redis
+- Npgsql (PostgreSQL)
+- Newtonsoft.Json
+- Kubernetes (kind)
+- Docker
 
-Led the deployment of scalable applications on AWS EC2 using Kubernetes and Argo CD for streamlined management and continuous integration. Orchestrated deployments via Kubernetes dashboard, ensuring efficient resource utilization and seamless scaling.
+---
 
-### Key Technologies:
+## License
 
-* AWS EC2: Infrastructure hosting for Kubernetes clusters.
-* Kubernetes Dashboard: User-friendly interface for managing containerized applications.
-* Argo CD: Continuous Delivery tool for automated application deployments.
+MIT License
 
-### Achievements:
-
-Implemented Kubernetes dashboard for visual management of containerized applications on AWS EC2 instances.
-Utilized Argo CD for automated deployment pipelines, enhancing deployment efficiency by 60%.
-Achieved seamless scaling and high availability, supporting 99.9% uptime for critical applications.
-This project description emphasizes your role in leveraging AWS EC2, Kubernetes, and Argo CD to optimize application deployment and management processes effectively.
-
-
-### Aapke DevOps Wale Bhaiya
-### [TrainWithShubham](https://www.trainwithshubham.com/)
 
